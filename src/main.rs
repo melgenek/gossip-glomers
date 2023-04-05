@@ -43,6 +43,19 @@ struct EchoResponse {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[serde(tag = "type", rename = "generate")]
+struct GenerateRequest {
+    msg_id: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[serde(tag = "type", rename = "generate_ok")]
+struct GenerateResponse {
+    in_reply_to: u64,
+    id: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 struct Message<A> {
     src: NodeId,
     dest: NodeId,
@@ -98,14 +111,29 @@ fn main() -> CommonResult<()> {
     let this_node = ThisNode::init()?;
     error!("This node {:?}", this_node);
 
+    // loop {
+    //     let request: Message<EchoRequest> = read_request()?;
+    //     error!("Got request: '{:?}'", request);
+    //
+    //     write_response(&Message {
+    //         src: request.dest.clone(),
+    //         dest: request.src,
+    //         body: EchoResponse { in_reply_to: request.body.msg_id, echo: request.body.echo },
+    //     })?;
+    // }
+
+    let mut counter: u64 = 1;
+
     loop {
-        let request: Message<EchoRequest> = read_request()?;
+        let request: Message<GenerateRequest> = read_request()?;
         error!("Got request: '{:?}'", request);
 
+        let new_id = format!("{}_{}", this_node.node_id.0, counter);
+        counter += 1;
         write_response(&Message {
             src: request.dest.clone(),
             dest: request.src,
-            body: EchoResponse { in_reply_to: request.body.msg_id, echo: request.body.echo },
+            body: GenerateResponse { in_reply_to: request.body.msg_id, id: new_id },
         })?;
     }
 }
