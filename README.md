@@ -1,1 +1,1 @@
-./maelstrom test -w echo --bin ~/go/bin/maelstrom-echo --node-count 1 --time-limit 10
+cargo build && ./maelstrom test -w echo --bin ../echo.sh --node-count 1 --time-limit 10 --log-stderr
