@@ -8,8 +8,9 @@ use serde::Serialize;
 use stderrlog::{ColorChoice, LogLevelNum, Timestamp};
 
 use super::error::Result;
-use super::message::{InitRequest, InitResponse};
+use super::message::init::{INIT_RESPONSE_VALUE_INSTANCE, InitRequest, InitRequestValue};
 use super::message::Message;
+use super::message::req_resp::{Request, Response};
 use super::this_node::ThisNode;
 
 pub struct Runner<Req, Resp> {
@@ -51,7 +52,7 @@ fn init() -> Result<ThisNode> {
     let message: Message<InitRequest> = read_request()?;
     debug!("Got init request: '{:?}'", message);
     match message.body {
-        InitRequest { msg_id, node_id, node_ids } => {
+        Request { msg_id, value: InitRequestValue { node_id, node_ids } } => {
             let this_node = ThisNode {
                 node_id,
                 node_ids,
@@ -59,7 +60,10 @@ fn init() -> Result<ThisNode> {
             let init_response = Message {
                 src: this_node.node_id.clone(),
                 dest: message.src,
-                body: InitResponse { in_reply_to: msg_id },
+                body: Response {
+                    in_reply_to: msg_id,
+                    value: INIT_RESPONSE_VALUE_INSTANCE,
+                },
             };
 
             debug!("Writing init response: '{:?}'", init_response);

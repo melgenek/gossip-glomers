@@ -1,36 +1,34 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct NodeId(pub String);
+use crate::common::message::NodeId;
+use crate::common::message::req_resp::Request;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(tag = "type", rename = "init")]
-pub struct InitRequest {
-    pub msg_id: u64,
+pub struct InitRequestValue {
     pub node_id: NodeId,
     pub node_ids: Vec<NodeId>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(tag = "type", rename = "init_ok")]
-pub struct InitResponse {
-    pub in_reply_to: u64,
+pub struct InitResponseValue {
+    #[serde(flatten)]
+    n: (),
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct Message<A> {
-    pub src: NodeId,
-    pub dest: NodeId,
-    pub body: A,
-}
+pub const INIT_RESPONSE_VALUE_INSTANCE: InitResponseValue = InitResponseValue { n: () };
 
-impl<A> Message<A> {}
-
+pub type InitRequest = Request<InitRequestValue>;
 
 #[cfg(test)]
 mod tests {
+    use std::marker::PhantomData;
+
     use crate::common::error::Result;
-    use crate::common::message::{InitRequest, InitResponse, Message, NodeId};
+    use crate::common::message::{Message, MessageId, NodeId};
+    use crate::common::message::init::{INIT_RESPONSE_VALUE_INSTANCE, InitRequest, InitRequestValue, InitResponseValue};
+    use crate::common::message::req_resp::{Request, Response};
 
     #[test]
     fn should_deserialize_init() -> Result<()> {
@@ -41,24 +39,28 @@ mod tests {
         assert_eq!(result, Message {
             src: NodeId("c0".to_string()),
             dest: NodeId("n0".to_string()),
-            body: InitRequest {
-                msg_id: 1,
-                node_id: NodeId("n0".to_string()),
-                node_ids: vec![NodeId("n0".to_string())],
+            body: Request {
+                msg_id: MessageId(1),
+                value: InitRequestValue {
+                    node_id: NodeId("n0".to_string()),
+                    node_ids: vec![NodeId("n0".to_string())],
+                },
             },
         });
+
         Ok(())
     }
 
     #[test]
     fn should_serialize_init_ok() -> Result<()> {
-        let expected = r#"{"src":"n0","dest":"c0","body":{"type":"init_ok","in_reply_to":1}}"#;
+        let expected = r#"{"src":"n0","dest":"c0","body":{"in_reply_to":1,"type":"init_ok"}}"#;
 
         let result = serde_json::to_string(&Message {
             src: NodeId("n0".to_string()),
             dest: NodeId("c0".to_string()),
-            body: InitResponse {
-                in_reply_to: 1,
+            body: Response {
+                in_reply_to: MessageId(1),
+                value: INIT_RESPONSE_VALUE_INSTANCE,
             },
         })?;
 
