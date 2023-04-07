@@ -1,0 +1,370 @@
+2023-04-07 21:24:27,798{GMT}	INFO	[jepsen test runner] jepsen.core: Test version 3815a3524198281c7d708578bf4c2c5e7249ebf5 (plus uncommitted changes)
+2023-04-07 21:24:27,798{GMT}	INFO	[jepsen test runner] jepsen.core: Command line:
+lein run test -w echo --bin ./target/debug/echo --node-count 1 --time-limit 10 --log-stderr
+2023-04-07 21:24:27,847{GMT}	INFO	[jepsen test runner] jepsen.core: Running test:
+{:args []
+ :remote
+ #jepsen.control.retry.Remote{:remote #jepsen.control.scp.Remote{:cmd-remote #jepsen.control.sshj.SSHJRemote{:concurrency-limit 6,
+                                                                                                             :conn-spec nil,
+                                                                                                             :client nil,
+                                                                                                             :semaphore nil},
+                                                                 :conn-spec nil},
+                              :conn nil}
+ :log-net-send false
+ :node-count 1
+ :availability nil
+ :max-txn-length 4
+ :concurrency 1
+ :db
+ #object[maelstrom.db$db$reify__16142
+         "0x28446b06"
+         "maelstrom.db$db$reify__16142@28446b06"]
+ :max-writes-per-key 16
+ :leave-db-running? false
+ :name "echo"
+ :logging-json? false
+ :start-time
+ #object[org.joda.time.DateTime "0x404bca88" "2023-04-07T21:24:27.705+02:00"]
+ :nemesis-interval 10
+ :net
+ #object[maelstrom.net$jepsen_net$reify__15251
+         "0x509cf379"
+         "maelstrom.net$jepsen_net$reify__15251@509cf379"]
+ :client
+ #object[maelstrom.workload.echo$client$reify__16863
+         "0x4f517209"
+         "maelstrom.workload.echo$client$reify__16863@4f517209"]
+ :barrier
+ #object[java.util.concurrent.CyclicBarrier
+         "0x60877629"
+         "java.util.concurrent.CyclicBarrier@60877629"]
+ :log-stderr true
+ :pure-generators true
+ :ssh {:dummy? true}
+ :rate 5
+ :checker
+ #object[jepsen.checker$compose$reify__11881
+         "0x7e86ff3b"
+         "jepsen.checker$compose$reify__11881@7e86ff3b"]
+ :argv
+ ("test"
+  "-w"
+  "echo"
+  "--bin"
+  "./target/debug/echo"
+  "--node-count"
+  "1"
+  "--time-limit"
+  "10"
+  "--log-stderr")
+ :nemesis
+ (jepsen.nemesis.ReflCompose
+  {:fm {:start-partition 0,
+        :stop-partition 0,
+        :kill 1,
+        :start 1,
+        :pause 1,
+        :resume 1},
+   :nemeses [#unprintable "jepsen.nemesis.combined$partition_nemesis$reify__16416@4936dca9"
+             #unprintable "jepsen.nemesis.combined$db_nemesis$reify__16397@d332ebc"]})
+ :nodes ["n0"]
+ :test-count 1
+ :latency {:mean 0, :dist :constant}
+ :bin "./target/debug/echo"
+ :generator
+ (jepsen.generator.TimeLimit
+  {:limit 10000000000,
+   :cutoff nil,
+   :gen (jepsen.generator.Any
+         {:gens [(jepsen.generator.OnThreads
+                  {:f #{:nemesis},
+                   :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__9167
+                                           "0x48d44acf"
+                                           "jepsen.generator.context$make_thread_filter$lazy_filter__9167@48d44acf"],
+                   :gen nil})
+                 (jepsen.generator.OnThreads
+                  {:f #jepsen.generator.context.AllBut{:element :nemesis},
+                   :context-filter #object[jepsen.generator.context$make_thread_filter$lazy_filter__9167
+                                           "0x21304869"
+                                           "jepsen.generator.context$make_thread_filter$lazy_filter__9167@21304869"],
+                   :gen (jepsen.generator.Stagger
+                         {:dt 400000000,
+                          :next-time nil,
+                          :gen (jepsen.generator.EachThread
+                                {:fresh-gen #object[maelstrom.workload.echo$workload$fn__16882
+                                                    "0x49f2994f"
+                                                    "maelstrom.workload.echo$workload$fn__16882@49f2994f"],
+                                 :context-filters #object[clojure.core$promise$reify__8591
+                                                          "0x63dd81ee"
+                                                          {:status :pending,
+                                                           :val nil}],
+                                 :gens {}})})})]})})
+ :log-net-recv false
+ :os
+ #object[maelstrom.net$jepsen_os$reify__15254
+         "0x9353d68"
+         "maelstrom.net$jepsen_os$reify__15254@9353d68"]
+ :time-limit 10
+ :workload :echo
+ :consistency-models [:strict-serializable]
+ :topology :grid}
+
+2023-04-07 21:24:29,784{GMT}	INFO	[jepsen node n0] maelstrom.net: Starting Maelstrom network
+2023-04-07 21:24:29,785{GMT}	INFO	[jepsen test runner] jepsen.db: Tearing down DB
+2023-04-07 21:24:29,787{GMT}	INFO	[jepsen test runner] jepsen.db: Setting up DB
+2023-04-07 21:24:29,790{GMT}	INFO	[jepsen node n0] maelstrom.service: Starting services: (lin-kv lin-tso lww-kv seq-kv)
+2023-04-07 21:24:29,792{GMT}	INFO	[jepsen node n0] maelstrom.db: Setting up n0
+2023-04-07 21:24:29,792{GMT}	INFO	[jepsen node n0] maelstrom.process: launching ./target/debug/echo []
+2023-04-07 21:24:30,075{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[36m2023-04-07T21:24:30.074350+02:00 - DEBUG - Got init request: 'Message { src: NodeId("c0"), dest: NodeId("n0"), body: InitRequest { msg_id: 1, node_id: NodeId("n0"), node_ids: [NodeId("n0")] } }'
+2023-04-07 21:24:30,075{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.075136+02:00 - DEBUG - Writing init response: 'Message { src: NodeId("n0"), dest: NodeId("c0"), body: InitResponse { in_reply_to: 1 } }'
+2023-04-07 21:24:30,083{GMT}	INFO	[jepsen test runner] jepsen.core: Relative time begins now
+2023-04-07 21:24:30,097{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 119"
+2023-04-07 21:24:30,099{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.099516+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 1, echo: "Please echo 119" } }'
+2023-04-07 21:24:30,100{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.099563+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 1, echo: "Please echo 119" } }'
+2023-04-07 21:24:30,103{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 1, :echo "Please echo 119"}
+2023-04-07 21:24:30,127{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 1"
+2023-04-07 21:24:30,128{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.128554+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 2, echo: "Please echo 1" } }'
+2023-04-07 21:24:30,129{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.128607+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 2, echo: "Please echo 1" } }'
+2023-04-07 21:24:30,129{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 2, :echo "Please echo 1"}
+2023-04-07 21:24:30,132{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 9"
+2023-04-07 21:24:30,133{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.133552+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 3, echo: "Please echo 9" } }'
+2023-04-07 21:24:30,133{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.133603+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 3, echo: "Please echo 9" } }'
+2023-04-07 21:24:30,134{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 3, :echo "Please echo 9"}
+2023-04-07 21:24:30,218{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 80"
+2023-04-07 21:24:30,219{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.219505+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 4, echo: "Please echo 80" } }'
+2023-04-07 21:24:30,220{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.219574+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 4, echo: "Please echo 80" } }'
+2023-04-07 21:24:30,220{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 4, :echo "Please echo 80"}
+2023-04-07 21:24:30,242{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 87"
+2023-04-07 21:24:30,244{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.243992+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 5, echo: "Please echo 87" } }'
+2023-04-07 21:24:30,244{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.244062+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 5, echo: "Please echo 87" } }'
+2023-04-07 21:24:30,244{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 5, :echo "Please echo 87"}
+2023-04-07 21:24:30,316{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 55"
+2023-04-07 21:24:30,318{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.318248+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 6, echo: "Please echo 55" } }'
+2023-04-07 21:24:30,318{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.318318+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 6, echo: "Please echo 55" } }'
+2023-04-07 21:24:30,319{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 6, :echo "Please echo 55"}
+2023-04-07 21:24:30,355{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 122"
+2023-04-07 21:24:30,356{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.356311+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 7, echo: "Please echo 122" } }'
+2023-04-07 21:24:30,356{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.356385+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 7, echo: "Please echo 122" } }'
+2023-04-07 21:24:30,357{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 7, :echo "Please echo 122"}
+2023-04-07 21:24:30,493{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 26"
+2023-04-07 21:24:30,494{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.494442+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 8, echo: "Please echo 26" } }'
+2023-04-07 21:24:30,495{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.494514+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 8, echo: "Please echo 26" } }'
+2023-04-07 21:24:30,495{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 8, :echo "Please echo 26"}
+2023-04-07 21:24:30,846{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 111"
+2023-04-07 21:24:30,847{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.847186+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 9, echo: "Please echo 111" } }'
+2023-04-07 21:24:30,847{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.847256+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 9, echo: "Please echo 111" } }'
+2023-04-07 21:24:30,848{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 9, :echo "Please echo 111"}
+2023-04-07 21:24:30,934{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 14"
+2023-04-07 21:24:30,935{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.935686+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 10, echo: "Please echo 14" } }'
+2023-04-07 21:24:30,936{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:30.935756+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 10, echo: "Please echo 14" } }'
+2023-04-07 21:24:30,936{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 10, :echo "Please echo 14"}
+2023-04-07 21:24:31,098{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 120"
+2023-04-07 21:24:31,100{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.100218+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 11, echo: "Please echo 120" } }'
+2023-04-07 21:24:31,101{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.100525+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 11, echo: "Please echo 120" } }'
+2023-04-07 21:24:31,101{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 11, :echo "Please echo 120"}
+2023-04-07 21:24:31,366{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 14"
+2023-04-07 21:24:31,368{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.368227+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 12, echo: "Please echo 14" } }'
+2023-04-07 21:24:31,368{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.368304+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 12, echo: "Please echo 14" } }'
+2023-04-07 21:24:31,369{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 12, :echo "Please echo 14"}
+2023-04-07 21:24:31,403{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 108"
+2023-04-07 21:24:31,404{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.404024+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 13, echo: "Please echo 108" } }'
+2023-04-07 21:24:31,404{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.404082+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 13, echo: "Please echo 108" } }'
+2023-04-07 21:24:31,404{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 13, :echo "Please echo 108"}
+2023-04-07 21:24:31,598{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 3"
+2023-04-07 21:24:31,600{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.600276+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 14, echo: "Please echo 3" } }'
+2023-04-07 21:24:31,600{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.600345+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 14, echo: "Please echo 3" } }'
+2023-04-07 21:24:31,601{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 14, :echo "Please echo 3"}
+2023-04-07 21:24:31,898{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 66"
+2023-04-07 21:24:31,899{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.899276+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 15, echo: "Please echo 66" } }'
+2023-04-07 21:24:31,899{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:31.899346+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 15, echo: "Please echo 66" } }'
+2023-04-07 21:24:31,900{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 15, :echo "Please echo 66"}
+2023-04-07 21:24:32,254{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 97"
+2023-04-07 21:24:32,255{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.255216+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 16, echo: "Please echo 97" } }'
+2023-04-07 21:24:32,256{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.255486+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 16, echo: "Please echo 97" } }'
+2023-04-07 21:24:32,256{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 16, :echo "Please echo 97"}
+2023-04-07 21:24:32,287{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 55"
+2023-04-07 21:24:32,288{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.288136+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 17, echo: "Please echo 55" } }'
+2023-04-07 21:24:32,288{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.288208+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 17, echo: "Please echo 55" } }'
+2023-04-07 21:24:32,289{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 17, :echo "Please echo 55"}
+2023-04-07 21:24:32,348{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 42"
+2023-04-07 21:24:32,350{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.350135+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 18, echo: "Please echo 42" } }'
+2023-04-07 21:24:32,350{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.350215+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 18, echo: "Please echo 42" } }'
+2023-04-07 21:24:32,351{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 18, :echo "Please echo 42"}
+2023-04-07 21:24:32,618{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 97"
+2023-04-07 21:24:32,619{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.619341+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 19, echo: "Please echo 97" } }'
+2023-04-07 21:24:32,619{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.619411+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 19, echo: "Please echo 97" } }'
+2023-04-07 21:24:32,620{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 19, :echo "Please echo 97"}
+2023-04-07 21:24:32,870{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 56"
+2023-04-07 21:24:32,871{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.871334+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 20, echo: "Please echo 56" } }'
+2023-04-07 21:24:32,871{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:32.871415+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 20, echo: "Please echo 56" } }'
+2023-04-07 21:24:32,872{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 20, :echo "Please echo 56"}
+2023-04-07 21:24:33,059{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 119"
+2023-04-07 21:24:33,060{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:33.060617+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 21, echo: "Please echo 119" } }'
+2023-04-07 21:24:33,061{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:33.060686+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 21, echo: "Please echo 119" } }'
+2023-04-07 21:24:33,061{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 21, :echo "Please echo 119"}
+2023-04-07 21:24:33,316{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 6"
+2023-04-07 21:24:33,318{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:33.318102+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 22, echo: "Please echo 6" } }'
+2023-04-07 21:24:33,319{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 22, :echo "Please echo 6"}
+2023-04-07 21:24:33,337{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:33.318331+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 22, echo: "Please echo 6" } }'
+2023-04-07 21:24:33,623{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 84"
+2023-04-07 21:24:33,624{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:33.624438+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 23, echo: "Please echo 84" } }'
+2023-04-07 21:24:33,625{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:33.624519+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 23, echo: "Please echo 84" } }'
+2023-04-07 21:24:33,625{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 23, :echo "Please echo 84"}
+2023-04-07 21:24:33,782{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 15"
+2023-04-07 21:24:33,794{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:33.794213+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 24, echo: "Please echo 15" } }'
+2023-04-07 21:24:33,794{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:33.794271+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 24, echo: "Please echo 15" } }'
+2023-04-07 21:24:33,794{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 24, :echo "Please echo 15"}
+2023-04-07 21:24:34,059{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 11"
+2023-04-07 21:24:34,060{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.060594+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 25, echo: "Please echo 11" } }'
+2023-04-07 21:24:34,061{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.060665+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 25, echo: "Please echo 11" } }'
+2023-04-07 21:24:34,061{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 25, :echo "Please echo 11"}
+2023-04-07 21:24:34,299{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 51"
+2023-04-07 21:24:34,301{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.301083+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 26, echo: "Please echo 51" } }'
+2023-04-07 21:24:34,301{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.301152+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 26, echo: "Please echo 51" } }'
+2023-04-07 21:24:34,301{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 26, :echo "Please echo 51"}
+2023-04-07 21:24:34,419{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 127"
+2023-04-07 21:24:34,420{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.420037+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 27, echo: "Please echo 127" } }'
+2023-04-07 21:24:34,420{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.420284+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 27, echo: "Please echo 127" } }'
+2023-04-07 21:24:34,421{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 27, :echo "Please echo 127"}
+2023-04-07 21:24:34,721{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 15"
+2023-04-07 21:24:34,723{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.722817+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 28, echo: "Please echo 15" } }'
+2023-04-07 21:24:34,723{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.722885+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 28, echo: "Please echo 15" } }'
+2023-04-07 21:24:34,723{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 28, :echo "Please echo 15"}
+2023-04-07 21:24:34,945{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 20"
+2023-04-07 21:24:34,946{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.946743+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 29, echo: "Please echo 20" } }'
+2023-04-07 21:24:34,947{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:34.946815+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 29, echo: "Please echo 20" } }'
+2023-04-07 21:24:34,947{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 29, :echo "Please echo 20"}
+2023-04-07 21:24:35,139{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 32"
+2023-04-07 21:24:35,140{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.140658+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 30, echo: "Please echo 32" } }'
+2023-04-07 21:24:35,141{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.140733+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 30, echo: "Please echo 32" } }'
+2023-04-07 21:24:35,141{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 30, :echo "Please echo 32"}
+2023-04-07 21:24:35,160{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 2"
+2023-04-07 21:24:35,161{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.161664+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 31, echo: "Please echo 2" } }'
+2023-04-07 21:24:35,162{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.161732+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 31, echo: "Please echo 2" } }'
+2023-04-07 21:24:35,162{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 31, :echo "Please echo 2"}
+2023-04-07 21:24:35,361{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 49"
+2023-04-07 21:24:35,362{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.362827+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 32, echo: "Please echo 49" } }'
+2023-04-07 21:24:35,363{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.362895+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 32, echo: "Please echo 49" } }'
+2023-04-07 21:24:35,363{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 32, :echo "Please echo 49"}
+2023-04-07 21:24:35,518{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 77"
+2023-04-07 21:24:35,520{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.519793+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 33, echo: "Please echo 77" } }'
+2023-04-07 21:24:35,520{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.520184+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 33, echo: "Please echo 77" } }'
+2023-04-07 21:24:35,521{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 33, :echo "Please echo 77"}
+2023-04-07 21:24:35,851{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 100"
+2023-04-07 21:24:35,857{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.857288+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 34, echo: "Please echo 100" } }'
+2023-04-07 21:24:35,858{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:35.857392+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 34, echo: "Please echo 100" } }'
+2023-04-07 21:24:35,858{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 34, :echo "Please echo 100"}
+2023-04-07 21:24:36,181{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 60"
+2023-04-07 21:24:36,183{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.183201+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 35, echo: "Please echo 60" } }'
+2023-04-07 21:24:36,183{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.183305+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 35, echo: "Please echo 60" } }'
+2023-04-07 21:24:36,184{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 35, :echo "Please echo 60"}
+2023-04-07 21:24:36,268{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 69"
+2023-04-07 21:24:36,269{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.269220+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 36, echo: "Please echo 69" } }'
+2023-04-07 21:24:36,269{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.269289+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 36, echo: "Please echo 69" } }'
+2023-04-07 21:24:36,270{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 36, :echo "Please echo 69"}
+2023-04-07 21:24:36,499{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 109"
+2023-04-07 21:24:36,500{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.500748+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 37, echo: "Please echo 109" } }'
+2023-04-07 21:24:36,501{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.500819+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 37, echo: "Please echo 109" } }'
+2023-04-07 21:24:36,501{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 37, :echo "Please echo 109"}
+2023-04-07 21:24:36,760{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 62"
+2023-04-07 21:24:36,761{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.761439+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 38, echo: "Please echo 62" } }'
+2023-04-07 21:24:36,762{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.761720+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 38, echo: "Please echo 62" } }'
+2023-04-07 21:24:36,762{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 38, :echo "Please echo 62"}
+2023-04-07 21:24:36,923{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 82"
+2023-04-07 21:24:36,924{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.924191+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 39, echo: "Please echo 82" } }'
+2023-04-07 21:24:36,924{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:36.924245+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 39, echo: "Please echo 82" } }'
+2023-04-07 21:24:36,924{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 39, :echo "Please echo 82"}
+2023-04-07 21:24:37,198{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 0"
+2023-04-07 21:24:37,199{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.198920+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 40, echo: "Please echo 0" } }'
+2023-04-07 21:24:37,199{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.198990+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 40, echo: "Please echo 0" } }'
+2023-04-07 21:24:37,201{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 40, :echo "Please echo 0"}
+2023-04-07 21:24:37,384{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 22"
+2023-04-07 21:24:37,385{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.385034+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 41, echo: "Please echo 22" } }'
+2023-04-07 21:24:37,385{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.385103+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 41, echo: "Please echo 22" } }'
+2023-04-07 21:24:37,385{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 41, :echo "Please echo 22"}
+2023-04-07 21:24:37,487{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 0"
+2023-04-07 21:24:37,489{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.489014+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 42, echo: "Please echo 0" } }'
+2023-04-07 21:24:37,489{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.489085+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 42, echo: "Please echo 0" } }'
+2023-04-07 21:24:37,489{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 42, :echo "Please echo 0"}
+2023-04-07 21:24:37,720{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 71"
+2023-04-07 21:24:37,721{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.721388+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 43, echo: "Please echo 71" } }'
+2023-04-07 21:24:37,721{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.721460+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 43, echo: "Please echo 71" } }'
+2023-04-07 21:24:37,722{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 43, :echo "Please echo 71"}
+2023-04-07 21:24:37,998{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 88"
+2023-04-07 21:24:38,000{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:37.999732+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 44, echo: "Please echo 88" } }'
+2023-04-07 21:24:38,000{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.000012+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 44, echo: "Please echo 88" } }'
+2023-04-07 21:24:38,000{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 44, :echo "Please echo 88"}
+2023-04-07 21:24:38,020{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 92"
+2023-04-07 21:24:38,021{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.021551+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 45, echo: "Please echo 92" } }'
+2023-04-07 21:24:38,021{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.021607+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 45, echo: "Please echo 92" } }'
+2023-04-07 21:24:38,022{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 45, :echo "Please echo 92"}
+2023-04-07 21:24:38,382{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 59"
+2023-04-07 21:24:38,383{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.383339+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 46, echo: "Please echo 59" } }'
+2023-04-07 21:24:38,383{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.383409+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 46, echo: "Please echo 59" } }'
+2023-04-07 21:24:38,384{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 46, :echo "Please echo 59"}
+2023-04-07 21:24:38,406{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 61"
+2023-04-07 21:24:38,407{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.407262+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 47, echo: "Please echo 61" } }'
+2023-04-07 21:24:38,408{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.407365+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 47, echo: "Please echo 61" } }'
+2023-04-07 21:24:38,408{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 47, :echo "Please echo 61"}
+2023-04-07 21:24:38,661{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 30"
+2023-04-07 21:24:38,662{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.662149+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 48, echo: "Please echo 30" } }'
+2023-04-07 21:24:38,662{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.662226+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 48, echo: "Please echo 30" } }'
+2023-04-07 21:24:38,662{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 48, :echo "Please echo 30"}
+2023-04-07 21:24:38,992{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 20"
+2023-04-07 21:24:38,993{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.992984+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 49, echo: "Please echo 20" } }'
+2023-04-07 21:24:38,993{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:38.993036+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 49, echo: "Please echo 20" } }'
+2023-04-07 21:24:38,993{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 49, :echo "Please echo 20"}
+2023-04-07 21:24:39,273{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 33"
+2023-04-07 21:24:39,288{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:39.287771+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 50, echo: "Please echo 33" } }'
+2023-04-07 21:24:39,288{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 50, :echo "Please echo 33"}
+2023-04-07 21:24:39,306{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:39.288079+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 50, echo: "Please echo 33" } }'
+2023-04-07 21:24:39,442{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 37"
+2023-04-07 21:24:39,444{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:39.443983+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 51, echo: "Please echo 37" } }'
+2023-04-07 21:24:39,444{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:39.444064+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 51, echo: "Please echo 37" } }'
+2023-04-07 21:24:39,444{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 51, :echo "Please echo 37"}
+2023-04-07 21:24:39,656{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 83"
+2023-04-07 21:24:39,658{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:39.657826+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 52, echo: "Please echo 83" } }'
+2023-04-07 21:24:39,658{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:39.657930+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 52, echo: "Please echo 83" } }'
+2023-04-07 21:24:39,658{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 52, :echo "Please echo 83"}
+2023-04-07 21:24:39,924{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:invoke	:echo	"Please echo 62"
+2023-04-07 21:24:39,924{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:39.924843+02:00 - DEBUG - Got request: 'Message { src: NodeId("c2"), dest: NodeId("n0"), body: EchoRequest { msg_id: 53, echo: "Please echo 62" } }'
+2023-04-07 21:24:39,925{GMT}	INFO	[n0 stderr] maelstrom.process: [0m[0m[36m2023-04-07T21:24:39.924900+02:00 - DEBUG - Writing response: 'Message { src: NodeId("n0"), dest: NodeId("c2"), body: EchoResponse { in_reply_to: 53, echo: "Please echo 62" } }'
+2023-04-07 21:24:39,925{GMT}	INFO	[jepsen worker 0] jepsen.util: 0	:ok	:echo	{:type "echo_ok", :in_reply_to 53, :echo "Please echo 62"}
+2023-04-07 21:24:39,963{GMT}	INFO	[jepsen test runner] jepsen.core: Run complete, writing
+2023-04-07 21:24:40,047{GMT}	INFO	[jepsen node n0] maelstrom.db: Tearing down n0
+2023-04-07 21:24:40,048{GMT}	INFO	[n0 stderr] maelstrom.process: [0m
+2023-04-07 21:24:41,829{GMT}	INFO	[jepsen node n0] maelstrom.net: Shutting down Maelstrom network
+2023-04-07 21:24:41,832{GMT}	INFO	[jepsen test runner] jepsen.core: Analyzing...
+2023-04-07 21:24:43,081{GMT}	INFO	[jepsen test runner] jepsen.core: Analysis complete
+2023-04-07 21:24:43,104{GMT}	INFO	[jepsen results] jepsen.store: Wrote /Users/ymelnyk/myproj/gossip-glomers/store/echo/20230407T212427.705+0200/results.edn
+2023-04-07 21:24:43,214{GMT}	INFO	[jepsen test runner] jepsen.core: {:perf {:latency-graph {:valid? true},
+        :rate-graph {:valid? true},
+        :valid? true},
+ :timeline {:valid? true},
+ :exceptions {:valid? true},
+ :stats {:valid? true,
+         :count 53,
+         :ok-count 53,
+         :fail-count 0,
+         :info-count 0,
+         :by-f {:echo {:valid? true,
+                       :count 53,
+                       :ok-count 53,
+                       :fail-count 0,
+                       :info-count 0}}},
+ :availability {:valid? true, :ok-fraction 1.0},
+ :net {:all {:send-count 108,
+             :recv-count 108,
+             :msg-count 108,
+             :msgs-per-op 2.037736},
+       :clients {:send-count 108, :recv-count 108, :msg-count 108},
+       :servers {:send-count 0,
+                 :recv-count 0,
+                 :msg-count 0,
+                 :msgs-per-op 0.0},
+       :valid? true},
+ :workload {:valid? true, :errors ()},
+ :valid? true}
+
+
+Everything looks good! ヽ(‘ー`)ノ
