@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
-use gossip_glomers::common::message::req_resp::{Request, Response};
+
+use gossip_glomers::common::message::req_resp::Request;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(tag = "type", rename = "echo")]
@@ -7,14 +8,13 @@ pub struct EchoRequestValue {
     pub echo: String,
 }
 
+pub type EchoRequest = Request<EchoRequestValue>;
+
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(tag = "type", rename = "echo_ok")]
 pub struct EchoResponseValue {
     pub echo: String,
 }
-
-pub type EchoRequest = Request<EchoRequestValue>;
-pub type EchoResponse = Response<EchoResponseValue>;
 
 #[cfg(test)]
 mod tests {
@@ -22,7 +22,7 @@ mod tests {
     use gossip_glomers::common::message::{Message, MessageId, NodeId};
     use gossip_glomers::common::message::req_resp::{Request, Response};
 
-    use crate::message::{EchoRequest, EchoRequestValue, EchoResponse, EchoResponseValue};
+    use crate::message::{EchoRequest, EchoRequestValue, EchoResponseValue};
 
     #[test]
     fn should_deserialize_init() -> Result<()> {

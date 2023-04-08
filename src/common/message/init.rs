@@ -23,11 +23,9 @@ pub type InitRequest = Request<InitRequestValue>;
 
 #[cfg(test)]
 mod tests {
-    use std::marker::PhantomData;
-
     use crate::common::error::Result;
     use crate::common::message::{Message, MessageId, NodeId};
-    use crate::common::message::init::{INIT_RESPONSE_VALUE_INSTANCE, InitRequest, InitRequestValue, InitResponseValue};
+    use crate::common::message::init::{INIT_RESPONSE_VALUE_INSTANCE, InitRequest, InitRequestValue};
     use crate::common::message::req_resp::{Request, Response};
 
     #[test]

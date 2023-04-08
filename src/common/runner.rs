@@ -1,11 +1,11 @@
-use std::fmt::Debug;
 use std::io::{self, Write};
-use std::marker::PhantomData;
 
 use log::debug;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use stderrlog::{ColorChoice, LogLevelNum, Timestamp};
+
+use crate::common::actor::{Action, Actor};
 
 use super::error::Result;
 use super::message::init::{INIT_RESPONSE_VALUE_INSTANCE, InitRequest, InitRequestValue};
@@ -13,37 +13,41 @@ use super::message::Message;
 use super::message::req_resp::{Request, Response};
 use super::this_node::ThisNode;
 
-pub struct Runner<Req, Resp> {
-    req: PhantomData<Req>,
-    resp: PhantomData<Resp>,
-}
+pub fn run_actor<A>() -> Result<()>
+    where A: Actor {
+    stderrlog::new()
+        .verbosity(LogLevelNum::Trace)
+        .timestamp(Timestamp::Microsecond)
+        .color(ColorChoice::Always)
+        .init()
+        .unwrap();
 
-impl<Req, Resp> Runner<Req, Resp> {
-    pub fn new() -> Runner<Req, Resp> {
-        stderrlog::new()
-            .verbosity(LogLevelNum::Trace)
-            .timestamp(Timestamp::Microsecond)
-            .color(ColorChoice::Always)
-            .init()
-            .unwrap();
-        Runner { req: PhantomData, resp: PhantomData }
-    }
+    let this_node = init()?;
+    let mut actor = A::new(&this_node);
 
-    pub fn run<F>(&self, mut f: F) -> Result<()>
-        where F: FnMut(&ThisNode, Message<Req>) -> Message<Resp>,
-              Req: Debug + DeserializeOwned,
-              Resp: Debug + Serialize
-    {
-        let this_node = init()?;
+    loop {
+        let request: Message<A::Req> = read_request()?;
+        debug!("Got request: '{:?}'", request);
 
-        loop {
-            let request: Message<Req> = read_request()?;
-            debug!("Got request: '{:?}'", request);
+        let actions = actor.on_request(request.body);
 
-            let response = f(&this_node, request);
-
-            debug!("Writing response: '{:?}'", response);
-            write_response(&response)?;
+        for action in actions {
+            match action {
+                Action::Reply { msg_id, value } => {
+                    let response = Message {
+                        src: this_node.node_id.clone(),
+                        dest: request.src.clone(),
+                        body: Response {
+                            in_reply_to: msg_id,
+                            value,
+                        },
+                    };
+                    debug!("Writing reply: '{:?}'", response);
+                    write_response(&response)?;
+                }
+                Action::AskForReply { .. } => {}
+                Action::SendAndForget { .. } => {}
+            }
         }
     }
 }
@@ -57,6 +61,7 @@ fn init() -> Result<ThisNode> {
                 node_id,
                 node_ids,
             };
+
             let init_response = Message {
                 src: this_node.node_id.clone(),
                 dest: message.src,

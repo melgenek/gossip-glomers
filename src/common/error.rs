@@ -3,8 +3,8 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum Error {
-    #[error("Error: '{0}'")]
-    Message(String),
+    // #[error("Error: '{0}'")]
+    // Str(String),
     #[error(transparent)]
     Io(#[from] io::Error),
     #[error(transparent)]

@@ -1,23 +1,29 @@
+use gossip_glomers::common::actor::{Action, Actor};
+use gossip_glomers::common::error::Result;
+use gossip_glomers::common::runner::run_actor;
+use gossip_glomers::common::this_node::ThisNode;
+
+use crate::message::{EchoRequest, EchoResponseValue};
+
 mod message;
 
-use gossip_glomers::common::message::Message;
-use gossip_glomers::common::runner::Runner;
-use gossip_glomers::common::error::Result;
-use gossip_glomers::common::message::req_resp::{Request, Response};
-use crate::message::{EchoRequest, EchoRequestValue, EchoResponse, EchoResponseValue};
+struct EchoActor;
+
+impl Actor for EchoActor {
+    type Req = EchoRequest;
+    type Resp = EchoResponseValue;
+
+    fn new(_: &ThisNode) -> Self {
+        EchoActor
+    }
+
+    fn on_request(&mut self, request: Self::Req) -> Vec<Action<Self::Resp>> {
+        vec![
+            Action::reply(request.msg_id, EchoResponseValue { echo: request.value.echo })
+        ]
+    }
+}
 
 fn main() -> Result<()> {
-    let runner: Runner<EchoRequest, EchoResponse> = Runner::new();
-
-    runner.run(|_, message| {
-        match message.body {
-            Request { msg_id, value: EchoRequestValue { echo } } => {
-                Message {
-                    src: message.dest,
-                    dest: message.src,
-                    body: Response { in_reply_to: msg_id, value: EchoResponseValue { echo } },
-                }
-            }
-        }
-    })
+    run_actor::<EchoActor>()
 }
