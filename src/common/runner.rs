@@ -1,96 +1,101 @@
-use std::io::{self, Write};
+use std::ops::Add;
+use std::time::{Duration, Instant};
 
-use log::debug;
-use serde::de::DeserializeOwned;
-use serde::Serialize;
+use log::{debug, trace};
 use stderrlog::{ColorChoice, LogLevelNum, Timestamp};
 
-use crate::common::actor::{Action, Actor};
+use crate::common::actor::Actor;
+use crate::common::console::Console;
+use crate::common::error::Error::UnexpectedMessage;
+use crate::common::message::init::InitMessage;
+use crate::common::message::message::{Message, MessageAddress};
+use crate::common::timer::Timer;
 
 use super::error::Result;
-use super::message::init::{INIT_RESPONSE_VALUE_INSTANCE, InitRequest, InitRequestValue};
-use super::message::Message;
-use super::message::req_resp::{Request, Response};
 use super::this_node::ThisNode;
 
 pub fn run_actor<A>() -> Result<()>
     where A: Actor {
     stderrlog::new()
-        .verbosity(LogLevelNum::Trace)
+        .verbosity(LogLevelNum::Debug)
         .timestamp(Timestamp::Microsecond)
         .color(ColorChoice::Always)
         .init()
         .unwrap();
 
-    let this_node = init()?;
-    let mut actor = A::new(&this_node);
+    let console = Console::new();
+    let this_node = init(&console)?;
+    let mut actor = A::new(this_node);
+
+    let mut timer: Timer<A::TimerKey> = Timer::new();
 
     loop {
-        let request: Message<A::Req> = read_request()?;
-        debug!("Got request: '{:?}'", request);
+        let now = Instant::now();
+        trace!("Now: '{:?}'", now);
+        let mut iteration_actions: Vec<RunnerAction<A::Msg, A::TimerKey>> = vec![];
 
-        let actions = actor.on_request(request.body);
+        let expired_timers = timer.remove_expired_timers(now);
+        for expired_timer in expired_timers {
+            trace!("Got expired timer: '{:?}'", expired_timer);
+            iteration_actions.extend(actor.on_timer(expired_timer)?);
+        }
 
-        for action in actions {
+        let duration_until_next_timer = timer.duration_until_next_timer(now);
+
+        if let Some(message) = console.read::<Message<A::Msg>>(duration_until_next_timer)? {
+            debug!("Got message: '{:?}'", message);
+            iteration_actions.extend(actor.on_request(message)?);
+        }
+
+        for action in iteration_actions {
             match action {
-                Action::Reply { msg_id, value } => {
-                    let response = Message {
-                        src: this_node.node_id.clone(),
-                        dest: request.src.clone(),
-                        body: Response {
-                            in_reply_to: msg_id,
-                            value,
-                        },
-                    };
-                    debug!("Writing reply: '{:?}'", response);
-                    write_response(&response)?;
+                RunnerAction::SendMessage(message) => {
+                    debug!("Writing message: '{:?}'", message);
+                    console.write(&message)?;
                 }
-                Action::AskForReply { .. } => {}
-                Action::SendAndForget { .. } => {}
+                RunnerAction::SetTimer { period, timer_key } => {
+                    debug!("Adding timer. Period: '{:?}', key: '{:?}'", period, timer_key);
+                    timer.add_timer(now.add(period), timer_key);
+                }
             }
         }
     }
 }
 
-fn init() -> Result<ThisNode> {
-    let message: Message<InitRequest> = read_request()?;
+fn init(console: &Console) -> Result<ThisNode> {
+    let message: Message<InitMessage> = console.read_blocking()?;
     debug!("Got init request: '{:?}'", message);
-    match message.body {
-        Request { msg_id, value: InitRequestValue { node_id, node_ids } } => {
-            let this_node = ThisNode {
-                node_id,
-                node_ids,
-            };
 
-            let init_response = Message {
-                src: this_node.node_id.clone(),
-                dest: message.src,
-                body: Response {
-                    in_reply_to: msg_id,
-                    value: INIT_RESPONSE_VALUE_INSTANCE,
-                },
-            };
-
+    let (body, address) = message.body_and_address();
+    match body {
+        InitMessage::Init { node_id, node_ids } => {
+            let init_response = Message::new_reply(address.to_reply_address(), InitMessage::InitOk);
             debug!("Writing init response: '{:?}'", init_response);
-            write_response(&init_response)?;
-
-            Ok(this_node)
+            console.write(&init_response)?;
+            Ok(ThisNode::new(node_id, node_ids))
         }
+        InitMessage::InitOk => Err(UnexpectedMessage("InitOk".to_string()))
     }
 }
 
-fn read_request<A>() -> Result<Message<A>>
-    where A: DeserializeOwned {
-    let mut line = String::new();
-    let _ = io::stdin().read_line(&mut line)?;
-    let message: Message<A> = serde_json::from_str(&line)?;
-    Ok(message)
+
+pub enum RunnerAction<A, B> {
+    SendMessage(Message<A>),
+    SetTimer {
+        period: Duration,
+        timer_key: B,
+    },
 }
 
-fn write_response<A>(response: &Message<A>) -> Result<()> where A: Serialize {
-    let response_bytes = serde_json::to_vec(&response)?;
-    let mut out_lock = io::stdout().lock();
-    out_lock.write_all(response_bytes.as_slice())?;
-    out_lock.write_all(&[b'\n'])?;
-    Ok(())
+
+pub fn reply<A, B>(request_address: MessageAddress, value: A) -> RunnerAction<A, B> {
+    RunnerAction::SendMessage(Message::new_reply(request_address.to_reply_address(), value))
+}
+
+pub fn send<A, B>(address: MessageAddress, value: A) -> RunnerAction<A, B> {
+    RunnerAction::SendMessage(Message::new_request(address, value))
+}
+
+pub fn set_timer<A, B>(period: Duration, timer_key: B) -> RunnerAction<A, B> {
+    RunnerAction::SetTimer { period, timer_key }
 }

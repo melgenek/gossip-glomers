@@ -1,18 +1,17 @@
 pub mod init;
-pub mod req_resp;
+pub mod message;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct NodeId(pub String);
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct MessageId(pub u64);
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct Message<A> {
-    pub src: NodeId,
-    pub dest: NodeId,
-    pub body: A,
+impl MessageId {
+    pub fn inc(&self) -> MessageId {
+        MessageId(self.0 + 1)
+    }
 }
 

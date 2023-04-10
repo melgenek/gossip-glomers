@@ -1,35 +1,42 @@
-use gossip_glomers::common::actor::{Action, Actor};
+use gossip_glomers::common::actor::Actor;
+use gossip_glomers::common::error::Error::UnexpectedMessage;
 use gossip_glomers::common::error::Result;
-use gossip_glomers::common::message::NodeId;
-use gossip_glomers::common::runner::run_actor;
+use gossip_glomers::common::message::message::Message;
+use gossip_glomers::common::runner::{reply, run_actor, RunnerAction};
 use gossip_glomers::common::this_node::ThisNode;
 
-use crate::message::{GenerateRequest, GenerateResponseValue};
+use crate::message::GenerateMessage;
 
 mod message;
 
 struct UniqueIdActor {
-    node_id: NodeId,
+    this_node: ThisNode,
     counter: u64,
 }
 
 impl Actor for UniqueIdActor {
-    type Req = GenerateRequest;
-    type Resp = GenerateResponseValue;
+    type Msg = GenerateMessage;
+    type TimerKey = ();
 
-    fn new(this_node: &ThisNode) -> Self {
+    fn new(this_node: ThisNode) -> Self {
         UniqueIdActor {
-            node_id: this_node.node_id.clone(),
+            this_node,
             counter: 0,
         }
     }
 
-    fn on_request(&mut self, request: Self::Req) -> Vec<Action<Self::Resp>> {
-        let new_id = format!("{}_{}", self.node_id.0, self.counter);
-        self.counter += 1;
-        vec![
-            Action::reply(request.msg_id, GenerateResponseValue { id: new_id })
-        ]
+    fn on_request(&mut self, request: Message<Self::Msg>) -> Result<Vec<RunnerAction<Self::Msg, Self::TimerKey>>> {
+        let (body, address) = request.body_and_address();
+        match body {
+            GenerateMessage::Generate => {
+                let id = format!("{}_{}", self.this_node.node_id.0, self.counter);
+                self.counter += 1;
+                Ok(vec![
+                    reply(address, GenerateMessage::GenerateOk { id })
+                ])
+            }
+            GenerateMessage::GenerateOk { .. } => Err(UnexpectedMessage("GenerateOk".to_string()))
+        }
     }
 }
 
