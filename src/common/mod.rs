@@ -5,3 +5,4 @@ pub mod this_node;
 pub mod actor;
 mod console;
 mod timer;
+pub mod record;

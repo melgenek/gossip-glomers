@@ -1,40 +1,9 @@
-use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 use std::time::{Duration, Instant};
-
-struct Entry<A> {
-    time: Instant,
-    timer_key: A,
-}
-
-impl<A> PartialEq<Self> for Entry<A> {
-    fn eq(&self, other: &Self) -> bool {
-        self.time == other.time
-    }
-}
-
-impl<A> Eq for Entry<A> {}
-
-impl<A> PartialOrd<Self> for Entry<A> {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self.time < other.time {
-            Some(Ordering::Greater)
-        } else if self.time == other.time {
-            Some(Ordering::Equal)
-        } else {
-            Some(Ordering::Less)
-        }
-    }
-}
-
-impl<A> Ord for Entry<A> {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
-    }
-}
+use crate::common::record::Record;
 
 pub struct Timer<A> {
-    timers: BinaryHeap<Entry<A>>,
+    timers: BinaryHeap<Record<A>>,
 }
 
 impl<A> Timer<A> {
@@ -45,15 +14,15 @@ impl<A> Timer<A> {
     }
 
     pub fn add_timer(&mut self, time: Instant, timer_key: A) {
-        self.timers.push(Entry { time, timer_key })
+        self.timers.push(Record { timestamp: time, value: timer_key })
     }
 
     pub fn remove_expired_timers(&mut self, now: Instant) -> Vec<A> {
         let mut expired_timers = vec![];
 
-        while let Some(Entry { time, .. }) = self.timers.peek() {
+        while let Some(Record { timestamp: time, .. }) = self.timers.peek() {
             if time <= &now {
-                expired_timers.push(self.timers.pop().unwrap().timer_key);
+                expired_timers.push(self.timers.pop().unwrap().value);
             } else {
                 break;
             }
@@ -62,7 +31,7 @@ impl<A> Timer<A> {
     }
 
     pub fn duration_until_next_timer(&self, now: Instant) -> Duration {
-        self.timers.peek().map_or_else(|| Duration::from_millis(0), |entry| entry.time.duration_since(now))
+        self.timers.peek().map_or_else(|| Duration::from_millis(0), |entry| entry.timestamp.duration_since(now))
     }
 }
 

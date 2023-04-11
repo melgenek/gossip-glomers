@@ -27,8 +27,8 @@ mod tests {
         let result: Message<EchoMessage> = serde_json::from_str(&str)?;
 
         assert_eq!(result, Message::new_request(MessageAddress {
-            src: NodeId("c0".to_string()),
-            dest: NodeId("n0".to_string()),
+            src: NodeId::from("c0"),
+            dest: NodeId::from("n0"),
             msg_id: MessageId(1),
         }, EchoMessage::Echo {
             echo: "text".to_string(),
@@ -41,8 +41,8 @@ mod tests {
         let expected = r#"{"src":"n0","dest":"c0","body":{"in_reply_to":1,"type":"echo_ok","echo":"text"}}"#;
 
         let result = serde_json::to_string(&Message::new_reply(MessageAddress {
-            src: NodeId("c0".to_string()),
-            dest: NodeId("n0".to_string()),
+            src: NodeId::from("c0"),
+            dest: NodeId::from("n0"),
             msg_id: MessageId(1),
         }.to_reply_address(), EchoMessage::EchoOk {
             echo: "text".to_string()

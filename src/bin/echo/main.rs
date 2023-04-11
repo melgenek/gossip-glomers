@@ -1,3 +1,4 @@
+use std::time::Instant;
 use gossip_glomers::common::actor::Actor;
 use gossip_glomers::common::error::Error::UnexpectedMessage;
 use gossip_glomers::common::error::Result;
@@ -15,11 +16,11 @@ impl Actor for EchoActor {
     type Msg = EchoMessage;
     type TimerKey = ();
 
-    fn new(_: ThisNode) -> Self {
-        EchoActor
+    fn new(_: ThisNode) -> Result<Self> {
+        Ok(EchoActor)
     }
 
-    fn on_request(&mut self, request: Message<Self::Msg>) -> Result<Vec<RunnerAction<Self::Msg, Self::TimerKey>>> {
+    fn on_request(&mut self, request: Message<Self::Msg>, _now: Instant) -> Result<Vec<RunnerAction<Self::Msg, Self::TimerKey>>> {
         let (body, address) = request.body_and_address();
         match body {
             EchoMessage::Echo { echo } => {

@@ -1,4 +1,3 @@
-use std::collections::BTreeSet;
 use serde::{Deserialize, Serialize};
 
 use crate::common::message::NodeId;
@@ -9,7 +8,7 @@ pub enum InitMessage {
     #[serde(rename = "init")]
     Init {
         node_id: NodeId,
-        node_ids: BTreeSet<NodeId>,
+        node_ids: Vec<NodeId>,
     },
     #[serde(rename = "init_ok")]
     InitOk,
@@ -30,12 +29,12 @@ mod tests {
         let result: Message<InitMessage> = serde_json::from_str(&str)?;
 
         assert_eq!(result, Message::new_request(MessageAddress {
-            src: NodeId("c0".to_string()),
-            dest: NodeId("n0".to_string()),
+            src: NodeId::from("c0"),
+            dest: NodeId::from("n0"),
             msg_id: MessageId(1),
         }, InitMessage::Init {
-            node_id: NodeId("n0".to_string()),
-            node_ids: BTreeSet::from([NodeId("n0".to_string())]),
+            node_id: NodeId::from("n0"),
+            node_ids: vec![NodeId::from("n0")],
         }));
 
         Ok(())
@@ -46,8 +45,8 @@ mod tests {
         let expected = r#"{"src":"n0","dest":"c0","body":{"in_reply_to":1,"type":"init_ok"}}"#;
 
         let result = serde_json::to_string(&Message::new_reply(MessageAddress {
-            src: NodeId("c0".to_string()),
-            dest: NodeId("n0".to_string()),
+            src: NodeId::from("c0"),
+            dest: NodeId::from("n0"),
             msg_id: MessageId(1),
         }.to_reply_address(), InitMessage::InitOk))?;
 

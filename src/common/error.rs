@@ -11,6 +11,8 @@ pub enum Error {
     Serde(#[from] serde_json::Error),
     #[error("Console error: '{0}'")]
     Console(String),
+    #[error("Unexpected error: '{0}'")]
+    UnexpectedError(String),
 }
 
 pub type Result<A> = std::result::Result<A, Error>;
