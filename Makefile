@@ -11,7 +11,7 @@ maelstrom_unique_id: build
 
 .PHONY: maelstrom_broadcast_nemesis
 maelstrom_broadcast_nemesis: build
-	(cd ./maelstrom && ./maelstrom test -w broadcast --bin  ../target/debug/broadcast --node-count 5 --time-limit 20 --rate 10 --nemesis partition --log-stderr)
+	(cd ./maelstrom && ./maelstrom test -w broadcast --bin  ../target/debug/broadcast --node-count 25 --time-limit 20 --rate 100 --latency 100 --nemesis partition --log-stderr)
 
 .PHONY: maelstrom_broadcast_efficient
 maelstrom_broadcast_efficient: build

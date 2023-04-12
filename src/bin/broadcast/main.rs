@@ -1,4 +1,4 @@
-use std::collections::{BinaryHeap, BTreeSet};
+use std::collections::{BinaryHeap, BTreeSet, HashMap};
 use std::ops::Add;
 use std::time::{Duration, Instant};
 
@@ -16,6 +16,8 @@ use gossip_glomers::common::this_node::ThisNode;
 use crate::message::{BroadcastMessage, MessageValue};
 
 mod message;
+
+const MAX_ACK_DELAY: Duration = Duration::from_millis(4000);
 
 /// Max broadcast propagation duration: = 24(nodes-1) / 4(NEXT_NODES) * 140ms (max latency) ~= 6 * 140ms = 840ms
 /// Target mean propagation duration: 1s
@@ -38,26 +40,28 @@ struct BroadcastActor {
     batch_size: usize,
     this_node: ThisNode,
     next_nodes: Vec<NodeId>,
-    seen_messages: BTreeSet<i64>,
+    seen_messages: HashMap<i64, BTreeSet<NodeId>>,
     batched_messages: BinaryHeap<Record<i64>>,
 }
 
 impl BroadcastActor {
-    fn observe_message(&mut self, message: i64, now: Instant) {
-        if self.seen_messages.insert(message) {
+    fn observe_message(&mut self, node_id: NodeId, message: i64, now: Instant) -> Vec<RunnerAction<BroadcastMessage, TimerKey>> {
+        let prev_nodes = self.seen_messages.entry(message).or_default();
+        let prev_nodes_count = prev_nodes.len();
+        prev_nodes.insert(node_id);
+        if prev_nodes_count == 0 {
             self.batched_messages.push(Record { timestamp: now, value: message });
+            vec![set_timer(MAX_ACK_DELAY, TimerKey::CheckAck(message))]
         } else {
-            debug!("Made a circle {:?}", message);
+            vec![]
         }
     }
 
-    fn get_broadcast_message(&mut self, now: Instant) -> Vec<RunnerAction<BroadcastMessage, ()>> {
+    fn get_broadcast_message(&mut self, now: Instant) -> Vec<RunnerAction<BroadcastMessage, TimerKey>> {
         let timestamp = self.batched_messages.peek().map(|Record { timestamp, .. }| timestamp).unwrap_or(&now).clone();
         if now.duration_since(timestamp) >= SINGLE_MESSAGE_DELAY
             || self.batched_messages.len() >= self.batch_size {
-            debug!("Batch is full {:?}", self.batched_messages.len() >= self.batch_size);
             let messages: Vec<i64> = std::mem::replace(&mut self.batched_messages, BinaryHeap::new()).into_iter().map(|Record { value, .. }| value).collect();
-            // todo add to in-flight
             self.next_nodes
                 .iter()
                 .map(|node_id| {
@@ -69,14 +73,20 @@ impl BroadcastActor {
                 .collect()
         } else {
             let duration_until_expiration = now.duration_since(timestamp.add(SINGLE_MESSAGE_DELAY)).add(Duration::from_millis(1));
-            vec![set_timer(duration_until_expiration, ())]
+            vec![set_timer(duration_until_expiration, TimerKey::SendBatch)]
         }
     }
 }
 
+#[derive(Debug)]
+enum TimerKey {
+    SendBatch,
+    CheckAck(i64),
+}
+
 impl Actor for BroadcastActor {
     type Msg = BroadcastMessage;
-    type TimerKey = ();
+    type TimerKey = TimerKey;
 
     fn new(this_node: ThisNode) -> Result<Self> {
         let batch_size = ((this_node.node_ids.len() as f64) * (NEXT_NODES as f64) / (TARGET_OPS_PER_BROADCAST as f64)).ceil() as usize;
@@ -94,7 +104,7 @@ impl Actor for BroadcastActor {
             batch_size,
             this_node,
             next_nodes,
-            seen_messages: BTreeSet::new(),
+            seen_messages: HashMap::new(),
             batched_messages: BinaryHeap::new(),
         })
     }
@@ -103,19 +113,22 @@ impl Actor for BroadcastActor {
         let (body, address) = request.body_and_address();
         match body {
             BroadcastMessage::Broadcast { message: MessageValue::Single(message) } => {
-                self.observe_message(message, now);
-                let mut messages = self.get_broadcast_message(now);
-                messages.push(reply(address, BroadcastMessage::BroadcastOk));
-                Ok(messages)
+                let mut responses = self.observe_message(address.src.clone(), message, now);
+                responses.extend(self.get_broadcast_message(now));
+                responses.push(reply(address, BroadcastMessage::BroadcastOk));
+                Ok(responses)
             }
             BroadcastMessage::Broadcast { message: MessageValue::Batch(messages) } => {
-                for message in messages {
-                    self.observe_message(message, now);
-                }
-                Ok(self.get_broadcast_message(now))
+                let mut responses: Vec<_> = messages
+                    .into_iter()
+                    .flat_map(|message| self.observe_message(address.src.clone(), message, now))
+                    .collect();
+                responses.extend(self.get_broadcast_message(now));
+                Ok(responses)
             }
             BroadcastMessage::Read => {
-                Ok(vec![reply(address, BroadcastMessage::ReadOk { messages: self.seen_messages.clone() })])
+                let messages = self.seen_messages.clone().into_keys().collect();
+                Ok(vec![reply(address, BroadcastMessage::ReadOk { messages })])
             }
             BroadcastMessage::Topology { .. } => {
                 Ok(vec![reply(address, BroadcastMessage::TopologyOk)])
@@ -126,8 +139,21 @@ impl Actor for BroadcastActor {
         }
     }
 
-    fn on_timeout(&mut self, _timer_key: Self::TimerKey, now: Instant) -> Result<Vec<RunnerAction<Self::Msg, Self::TimerKey>>> {
-        Ok(self.get_broadcast_message(now))
+    fn on_timeout(&mut self, timer_key: Self::TimerKey, now: Instant) -> Result<Vec<RunnerAction<Self::Msg, Self::TimerKey>>> {
+        match timer_key {
+            TimerKey::SendBatch => Ok(self.get_broadcast_message(now)),
+            TimerKey::CheckAck(message) => {
+                let node_ids = self.seen_messages.get(&message).ok_or(Error::UnexpectedError(format!("There must be nodes for the message {:?}", message)))?;
+                if node_ids.len() < NEXT_NODES {
+                    self.batched_messages.push(Record { timestamp: now, value: message });
+                    let mut responses = self.get_broadcast_message(now);
+                    responses.push(set_timer(MAX_ACK_DELAY, TimerKey::CheckAck(message)));
+                    Ok(responses)
+                } else {
+                    Ok(vec![])
+                }
+            }
+        }
     }
 }
 
