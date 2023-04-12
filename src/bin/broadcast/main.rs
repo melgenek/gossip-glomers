@@ -27,14 +27,13 @@ const NEXT_NODES: usize = 4;
 const TARGET_OPS_PER_BROADCAST: usize = 20;
 const SINGLE_MESSAGE_DELAY: Duration = Duration::from_millis(1000);
 
-/// Max broadcast propagation duration: = 24(nodes-1) / 8(NEXT_NODES) * 140ms (max latency) ~= 3 * 140ms = 420ms
+/// Max broadcast propagation duration: = 24(nodes-1) / 12(NEXT_NODES) * 140ms (max latency) ~= 2 * 140ms = 280ms
 /// Target mean propagation duration: 400ms
 /// Target max propagation duration: 600ms
-/// Period to max batch: 600ms - 420ms = 180ms
-/// /// How many nodes to notify during broadcast
-// const NEXT_NODES: usize = 8;
+/// Period to max batch: 600ms - 280ms = 320ms
+// const NEXT_NODES: usize = 12;
 // const TARGET_OPS_PER_BROADCAST: usize = 30;
-// const SINGLE_MESSAGE_DELAY: Duration = Duration::from_millis(80);
+// const SINGLE_MESSAGE_DELAY: Duration = Duration::from_millis(210);
 
 struct BroadcastActor {
     batch_size: usize,
